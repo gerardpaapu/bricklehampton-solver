@@ -22,11 +22,13 @@ fn main() {
         map,
         mask: *b"hampton",
     };
-    build_table(&mut pruning_table);
     println!(
-        "State = {}",
-        str::from_utf8(&start).expect("should be valid")
+      "Starting from {:?}",
+      str::from_utf8(&start).unwrap()
     );
+    println!("--------------------");
+    build_table(&mut pruning_table);
+ 
     if let Some(result) = search(&pruning_table, start) {
         println!("Solution found: {}", write_path(&result));
         let mut state = start.clone();
@@ -85,9 +87,9 @@ fn build_table(table: &mut PruningTable) {
     let start = mask_state(b"bricklehampton", &table.mask);
 
     for depth in 0..20 {
-        println!("Building table at depth: {}", depth);
+        print!("Building table at depth: {}", depth);
         build_table_at_depth(table, start.clone(), &vec![], depth);
-        println!("{} positions recorded", table.map.len());
+        println!("\t({} positions recorded)", table.map.len());
     }
 }
 
@@ -104,9 +106,6 @@ fn build_table_at_depth(
 ) {
     let len = path_length(&path);
     if len == max_path_length {
-        if len <= 3 {
-            println!("{}", str::from_utf8(&state).unwrap());
-        }
         let entry = table.map.get(&state);
         let depth: i32 = len.try_into().unwrap();
         if entry.is_none() || entry.is_some_and(|x| x > &depth) {
